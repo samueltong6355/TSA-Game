@@ -1,0 +1,124 @@
+import time
+import random
+
+class Player:
+    def __init__(self, player_class):
+        self.player_class = player_class
+        self.health = 100
+        self.inventory = []
+        self.points = 0
+
+    def display_stats(self):
+        print(f"\nClass: {self.player_class}")
+        print(f"Health: {self.health}")
+        print(f"Points: {self.points}")
+        print(f"Inventory: {', '.join(self.inventory)}")
+
+def introduction():
+    print("Welcome to the Fantasy Adventure Game!")
+    print("You find yourself in the mystical land of Eldoria.")
+
+def choose_class():
+    print("Choose your class:")
+    print("1. Warrior")
+    print("2. Mage")
+    print("3. Rogue")
+
+    choice = input("Enter the number of your choice: ")
+    if choice == '1':
+        return "Warrior"
+    elif choice == '2':
+        return "Mage"
+    elif choice == '3':
+        return "Rogue"
+    else:
+        print("Invalid choice. Please try again.")
+        return choose_class()
+
+def start_adventure(player):
+    print(f"Excellent choice, brave {player.player_class}! Your journey begins.")
+    print("You find yourself on a dirt road. Ahead, the path splits into two.")
+
+    while player.health > 0:
+        print("\n1. Take the left path.")
+        print("2. Take the right path.")
+        print("3. Rest for a while.")
+        print("4. View Stats")
+        choice = input("What will you do? ")
+
+        if choice == '1':
+            print("You encounter a group of goblins!")
+            battle(player)
+        elif choice == '2':
+            print("You discover a mysterious cave.")
+            explore_cave(player)
+        elif choice == '3':
+            print("You rest and regain your strength.")
+            time.sleep(2)
+            player.health = min(100, player.health + 20)
+            print("You feel refreshed!")
+        elif choice == '4':
+            player.display_stats()
+        else:
+            print("Invalid choice. Please try again.")
+
+def battle(player):
+    enemy_health = random.randint(20, 50)
+    print(f"A fierce battle ensues with goblins! Enemy health: {enemy_health}")
+
+    while player.health > 0 and enemy_health > 0:
+        attack = random.randint(5, 15)
+        enemy_attack = random.randint(1, 10)
+
+        print(f"\nYou deal {attack} damage to the goblins!")
+        enemy_health -= attack
+
+        if enemy_health > 0:
+            print(f"The goblins retaliate with {enemy_attack} damage!")
+            player.health -= enemy_attack
+            print(f"Your health: {player.health}")
+
+    if player.health > 0:
+        print("You emerge victorious! The goblins drop a potion.")
+        player.inventory.append("Health Potion")
+        player.points += 10  # Earn points for defeating goblins
+    else:
+        print("You were defeated by the goblins. Game over.")
+
+def explore_cave(player):
+    print("You enter the dark cave and find a treasure chest.")
+    print("Do you want to open it?")
+
+    choice = input("1. Yes\n2. No\n")
+
+    if choice == '1':
+        treasure = random.choice(["Gold Coins", "Magic Scroll", "Monster Trap"])
+        print(f"You find {treasure} in the chest!")
+        player.inventory.append(treasure)
+        if treasure == "Gold Coins":
+            player.points += 20  # Earn points for finding gold coins
+        elif treasure == "Magic Scroll":
+            player.points += 30  # Earn points for finding a magic scroll
+        elif treasure == "Monster Trap":
+            print("Oops! The chest contained a monster trap. You lose health.")
+            player.health -= 20
+    elif choice == '2':
+        print("You decide not to open the chest and continue exploring.")
+    else:
+        print("Invalid choice. Please try again.")
+
+def main():
+    introduction()
+    player_class = choose_class()
+    player = Player(player_class)
+
+    # Introduce levels
+    for level in range(1, 4):
+        print(f"\n--- Level {level} ---")
+        start_adventure(player)
+
+    print("\nCongratulations! You completed all levels.")
+    player.display_stats()
+
+if __name__ == "__main__":
+    main()

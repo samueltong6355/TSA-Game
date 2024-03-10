@@ -1,0 +1,314 @@
+import time
+import random
+
+class Player:
+    def __init__(self, player_class):
+        self.player_class = player_class
+        self.health = 100
+        self.inventory = {"Health Potion": 2}
+        self.points = 0
+
+    def display_stats(self):
+        print(f"\nName: {self.player_class}")
+        if self.health < 0:
+            print(f"Health: {0}")
+        else:
+            print(f"Health: {self.health}")
+        print(f"Points: {self.points}")
+        print(f"Inventory: {', '.join(self.inventory.keys())}")
+
+def introduction():
+    print("Welcome to the Fantasy Adventure Game!")
+    print("You find yourself in the mystical land of Eldoria.")
+
+def choose_class():
+    return input("Choose your name: ")
+
+def print_goblin_art():
+    print("""
+          .-==-.
+          |     |
+          |     |
+    (\_.--|\ / `-.
+    (/    \||     )
+          ||    ||
+    """)
+
+def print_cave_art():
+    print("""
+        _______
+       /       \\
+      /         \\
+     /    ___    \\
+    /    /   \    \\
+   /    /     \    \\
+   \\   |     |   /
+    \\  |     |  /
+     \\ |     | /
+      \\|_____|/
+    """)
+
+def print_coins_art():
+    print("""
+                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⢯⠙⠩⠀⡇⠊⠽⢖⠆⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠱⣠⠀⢁⣄⠔⠁⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠀⣷⣶⣾⣾⠀⠀⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⠀⢀⡔⠙⠈⢱⡟⣧⠀⠀⠀⠀⠀⠀⠀
+                ⠀⠀⠀⠀⠀⡠⠊⠀⠀⣀⡀⠀⠘⠕⢄⠀⠀⠀⠀⠀
+                ⠀⠀⠀⢀⠞⠀⠀⢀⣠⣿⣧⣀⠀⠀⢄⠱⡀⠀⠀⠀
+                ⠀⠀⡰⠃⠀⠀⢠⣿⠿⣿⡟⢿⣷⡄⠀⠑⢜⢆⠀⠀
+                ⠀⢰⠁⠀⠀⠀⠸⣿⣦⣿⡇⠀⠛⠋⠀⠨⡐⢍⢆⠀
+                ⠀⡇⠀⠀⠀⠀⠀⠙⠻⣿⣿⣿⣦⡀⠀⢀⠨⡒⠙⡄
+                ⢠⠁⡀⠀⠀⠀⣤⡀⠀⣿⡇⢈⣿⡷⠀⠠⢕⠢⠁⡇
+                ⠸⠀⡕⠀⠀⠀⢻⣿⣶⣿⣷⣾⡿⠁⠀⠨⣐⠨⢀⠃
+                ⠀⠣⣩⠘⠀⠀⠀⠈⠙⣿⡏⠁⠀⢀⠠⢁⡂⢉⠎⠀
+                ⠀⠀⠈⠓⠬⢀⣀⠀⠀⠈⠀⠀⠀⢐⣬⠴⠒⠁⠀⠀
+                ⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀
+    """)
+    #https://emojicombos.com/money-ascii-art
+
+def print_friendly_npc_art():
+    print("""
+      @
+     / \\
+    |   |
+     \\_/
+    """)
+
+def print_monster_trap_art():
+    print("""
+      ____
+     /    \\
+    |  ()  |
+     \\____/
+    """)
+
+def print_sword_art():
+    print("""
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣾⣿⣿⣿⡇
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⠋⣻⣿⣿⠀
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⡿⠋⣠⣾⣿⡿⠁⠀
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⡿⠋⣠⣾⣿⡿⠋⠀⠀⠀
+  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣔⣿⡿⠋⣠⣾⣿⡿⠋⠀⠀⠀⠀⠀
+  ⠀⠀⠀⠀⢀⣤⡀⠀⠀⠀⠀⣠⣾⣿⡿⠋⣠⣾⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠀⢴⣿⡋⣠⡄⠀⠀⢸⣿⡿⠋⣠⣾⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠀⠀⠙⢿⣿⣡⣴⠶⢾⣿⣿⣾⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠀⠀⠀⠀⢹⡟⠀⠀⠀⢹⡏⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠀⠀⠀⢀⣼⣿⣤⣀⣠⡾⠃⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠀⢀⣴⣿⣿⠟⠉⠉⠙⢿⣿⡋⢀⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⢠⣶⣶⣿⣿⠟⠁⠀⠀⠀⠀⠀⠙⢿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠐⢿⣿⣿⡧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+  ⠀⠀⠁⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+""")
+    #https://emojicombos.com/sword
+
+def start_adventure(player):
+    print(f"Brave {player.player_class}! Your journey begins.")
+    print("You find yourself on a dirt road. Ahead, the path splits into two.")
+
+    while player.health > 0:
+        print("\n1. Take the left path.")
+        print("2. Take the right path.")
+        print("3. Visit the Shop")
+        print("4. View Stats")
+        print("5. Use Health Potion")
+        choice = input("What will you do? ")
+
+        if choice == '1':
+            print_goblin_art()
+            print("You encounter a group of goblins!")
+            battle(player)
+        elif choice == '2':
+            print_cave_art()
+            print("You discover a mysterious cave.")
+            explore_cave(player)
+        elif choice == '3':
+            visit_shop(player)
+        elif choice == '4':
+            player.display_stats()
+        elif choice == '5':
+            use_potion(player)
+        else:
+            print("Invalid choice. Please try again.")
+
+def use_potion(player):
+    if "Health Potion" in player.inventory and player.inventory["Health Potion"] > 0:
+        heal_amount = random.randint(15, 30)
+        print(f"\nYou use a health potion and heal for {heal_amount} HP.")
+        player.health = min(100, player.health + heal_amount)
+        player.inventory["Health Potion"] -= 1
+        print(f"Your health: {player.health}")
+    else:
+        print("You don't have any health potions left!")
+
+def battle(player):
+    enemy_health = random.randint(20, 50)
+    print_goblin_art()
+    print(f"A fierce battle ensues with goblins! Enemy health: {enemy_health}")
+
+    while player.health > 0 and enemy_health > 0:
+        print("\n----------------------")
+        print("1. Attack")
+        print("2. Heal")
+        print("3. Run away")
+        print("----------------------")
+
+        battle_choice = input("What will you do? ")
+
+        if battle_choice == '1':
+            print_goblin_art()
+            print_sword_art()
+            print("You swing your weapon at the goblins!")
+            attack_damage = random.randint(5, 15)
+            enemy_attack = random.randint(1, 10)
+            print(f"\nYou deal {attack_damage} damage to the goblins! "
+                  f"Your health: {player.health} | Goblin health: {enemy_health}")
+            enemy_health -= attack_damage
+            print(f"The goblins retaliate with {enemy_attack} damage!")
+            player.health -= enemy_attack
+        elif battle_choice == '2':
+            print_friendly_npc_art()
+            print("A friendly NPC offers you a healing potion.")
+            if "Health Potion" in player.inventory and player.inventory["Health Potion"] > 0:
+                heal_amount = random.randint(15, 30)
+                print(f"\nYou use a health potion and heal for {heal_amount} HP. "
+                      f"Your health: {player.health} | Goblin health: {enemy_health}")
+                player.health = min(100, player.health + heal_amount)
+                player.inventory["Health Potion"] -= 1
+            else:
+                print("You don't have any health potions left!")
+        elif battle_choice == '3':
+            print("You run away from the battle.")
+            return
+
+        print("----------------------")
+
+        if enemy_health <= 0:
+            print_coins_art()
+            print("You emerge victorious! The goblins drop a potion.")
+            player.inventory["Health Potion"] += 1
+            player.points += 10  # Earn points for defeating goblins
+        elif player.health <= 0:
+            print("You were defeated by the goblins. Game over.")
+            return
+
+
+def explore_cave(player):
+    print_cave_art()
+    print("You enter the dark cave and find a treasure chest.")
+    print("Do you want to open it?")
+
+    choice = input("1. Yes\n2. No\n")
+
+    if choice == '1':
+        treasure = random.choice(["Gold Coins", "Magic Scroll", "Monster Trap", "Friendly NPC"])
+        print("You found something in the chest!")
+        if treasure == "Gold Coins":
+            print_coins_art()
+            print("You find Gold Coins!")
+            player.points += 20  # Earn points for finding gold coins
+        elif treasure == "Magic Scroll":
+            print("You find a Magic Scroll!")
+            player.points += 30  # Earn points for finding a magic scroll
+        elif treasure == "Monster Trap":
+            print_monster_trap_art()
+            print("Oops! The chest contained a monster trap. You lose health.")
+            player.health -= 20
+        elif treasure == "Friendly NPC":
+            print_friendly_npc_art()
+            print("You meet a friendly NPC who gives you a health potion and some coins.")
+            player.inventory["Health Potion"] += 1
+            player.points += 15  # Earn points for interacting with a friendly NPC
+    elif choice == '2':
+        print("You decide not to open the chest and continue exploring.")
+    else:
+        print("Invalid choice. Please try again.")
+
+
+
+def visit_shop(player):
+    print("Welcome to the Shop!")
+    print("1. Buy Health Potion (30 points)")
+    print("2. Return to Main Path Selector")
+
+    shop_choice = input("What will you do? ")
+
+    if shop_choice == '1':
+        if player.points >= 30:
+            print("You buy a Health Potion.")
+            player.inventory["Health Potion"] += 1
+            player.points -= 30
+        else:
+            print("Not enough points to buy a Health Potion.")
+    elif shop_choice == '2':
+        print("You return to the main path selector.")
+    else:
+        print("Invalid choice. Please try again.")
+
+def final_boss(player):
+    print("You sense a powerful presence. It's the fearsome Dragonlord!")
+    print("Prepare for the final battle!")
+
+    dragonlord_health = 100
+    while player.health > 0 and dragonlord_health > 0:
+        print("\n1. Attack")
+        print("2. Use Health Potion")
+        print("3. Run away")
+
+        boss_choice = input("What will you do? ")
+
+        if boss_choice == '1':
+            attack_damage = random.randint(10, 20)
+            dragonlord_attack = random.randint(5, 15)
+            dragonlord_health -= attack_damage
+            player.health -= dragonlord_attack
+            print(f"\nYou deal {attack_damage} damage to Dragonlord!")
+
+            print(f"Dragonlord retaliates with {dragonlord_attack} damage!")
+
+            print(f"Your health: {player.health}")
+        elif boss_choice == '2':
+            if "Health Potion" in player.inventory and player.inventory["Health Potion"] > 0:
+                heal_amount = random.randint(20, 40)
+                print(f"\nYou use a health potion and heal for {heal_amount} HP.")
+                player.health = min(100, player.health + heal_amount)
+                player.inventory["Health Potion"] -= 1
+                print(f"Your health: {player.health}")
+            else:
+                print("You don't have any health potions left!")
+        elif boss_choice == '3':
+            print("You run away from the final battle.")
+            return
+
+        if dragonlord_health <= 0:
+            print("Congratulations! You have defeated the mighty Dragonlord!")
+            player.points += 100  # Earn points for defeating the final boss
+        elif player.health <= 0:
+            print("You were defeated by the Dragonlord. Game over.")
+            return
+
+def main():
+    introduction()
+    player_class = choose_class()
+    player = Player(player_class)
+
+    # Introduce levels
+    for level in range(1, 4):
+        print(f"\n--- Level {level} ---")
+        start_adventure(player)
+
+    # Visit the shop before facing the final boss
+    print("\n--- Shop ---")
+    visit_shop(player)
+
+    # Face the final boss
+    print("\n--- Final Boss ---")
+    final_boss(player)
+
+    print("\nGame Over.")
+    player.display_stats()
+
+if __name__ == "__main__":
+    main()

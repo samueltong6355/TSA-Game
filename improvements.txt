@@ -1,0 +1,3 @@
+add pictures
+after winning reset everything
+add an ability to heal while in the battle screen with the goblins and dragonlord

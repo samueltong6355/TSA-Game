@@ -1,0 +1,140 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+class Player:
+    def __init__(self, player_class):
+        self.player_class = player_class
+        self.health = 100
+        self.inventory = {"Health Potion": 2}
+        self.points = 0
+
+    def display_stats(self):
+        messagebox.showinfo("Player Stats", f"Name: {self.player_class}\nHealth: {max(0, self.health)}\nPoints: {self.points}\nInventory: {', '.join(self.inventory.keys())}")
+
+class AdventureGameGUI(tk.Tk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.title("Fantasy Adventure Game")
+        self.geometry("600x400")
+
+        self.player = Player("Player")
+        self.create_widgets()
+
+    def create_widgets(self):
+        label = tk.Label(self, text="Welcome to the Fantasy Adventure Game!")
+        label.pack(pady=10)
+
+        button_start = tk.Button(self, text="Start Adventure", command=self.start_adventure)
+        button_start.pack(pady=10)
+
+        button_stats = tk.Button(self, text="View Stats", command=self.show_stats)
+        button_stats.pack(pady=10)
+
+    def start_adventure(self):
+        messagebox.showinfo("Adventure", "You find yourself on a dirt road. Ahead, the path splits into two.")
+
+        # Create a new top-level window for the adventure choices
+        adventure_window = tk.Toplevel(self)
+        adventure_window.title("Adventure Choices")
+
+        # Function to handle user choices
+        def handle_choice(choice):
+            adventure_window.destroy()  # Close the adventure window
+            if choice == '1':
+                self.encounter_goblins()
+            elif choice == '2':
+                self.explore_cave()
+            elif choice == '3':
+                self.visit_shop()
+            elif choice == '4':
+                self.show_stats()
+            elif choice == '5':
+                self.use_health_potion()
+
+        # Create buttons for each choice
+        for i in range(1, 6):
+            button_choice = tk.Button(adventure_window, text=f"{i}. Choice {i}", command=lambda c=str(i): handle_choice(c))
+            button_choice.pack(pady=5)
+
+    def encounter_goblins(self):
+        enemy_health = random.randint(20, 50)
+        messagebox.showinfo("Battle", f"A fierce battle ensues with goblins! Enemy health: {enemy_health}")
+
+        while self.player.health > 0 and enemy_health > 0:
+            battle_choice = messagebox.askyesno("Battle", "Do you want to continue the battle?")
+
+            if battle_choice:
+                self.attack_goblins(enemy_health)
+            else:
+                if random.choice([True, False]):
+                    messagebox.showinfo("Run Away", "You successfully run away from the battle.")
+                    return
+                else:
+                    messagebox.showinfo("Run Away", "You tried to run away but were unsuccessful!")
+
+    def attack_goblins(self, enemy_health):
+        attack_damage = random.randint(5, 15)
+        enemy_attack = random.randint(1, 10)
+        messagebox.showinfo("Attack", f"You deal {attack_damage} damage to the goblins!\nYour health: {self.player.health} | Goblin health: {enemy_health}\nThe goblins retaliate with {enemy_attack} damage!")
+
+        enemy_health -= attack_damage
+        self.player.health -= enemy_attack
+
+        if enemy_health <= 0:
+            messagebox.showinfo("Victory", "You emerge victorious! The goblins drop a potion.")
+            self.player.inventory["Health Potion"] += 1
+            self.player.points += 10
+        elif self.player.health <= 0:
+            messagebox.showinfo("Defeat", "You were defeated by the goblins. Game over.")
+
+    def explore_cave(self):
+        messagebox.showinfo("Cave", "You enter the dark cave and find a treasure chest.\nDo you want to open it?")
+
+        choice = messagebox.askyesno("Cave", "Yes - Open the chest\nNo - Continue exploring")
+
+        if choice:
+            treasure = random.choice(["Gold Coins", "Magic Scroll", "Monster Trap", "Friendly NPC"])
+            messagebox.showinfo("Treasure", f"You found something in the chest!\nTreasure: {treasure}")
+
+            if treasure == "Gold Coins":
+                self.player.points += 20
+            elif treasure == "Magic Scroll":
+                self.player.points += 30
+            elif treasure == "Monster Trap":
+                self.player.health -= 20
+            elif treasure == "Friendly NPC":
+                messagebox.showinfo("NPC", "You meet a friendly NPC who gives you a health potion and some coins.")
+                self.player.inventory["Health Potion"] += 1
+                self.player.points += 15
+
+    def visit_shop(self):
+        messagebox.showinfo("Shop", "Welcome to the Shop!\n1. Buy Health Potion (30 points)\n2. Return to Main Path Selector")
+
+        shop_choice = messagebox.askyesno("Shop", "Do you want to buy a Health Potion?")
+
+        if shop_choice:
+            if self.player.points >= 30:
+                messagebox.showinfo("Shop", "You buy a Health Potion.")
+                self.player.inventory["Health Potion"] += 1
+                self.player.points -= 30
+            else:
+                messagebox.showinfo("Shop", "Not enough points to buy a Health Potion.")
+        else:
+            messagebox.showinfo("Shop", "You return to the main path selector.")
+
+    def show_stats(self):
+        self.player.display_stats()
+
+    def use_health_potion(self):
+        if "Health Potion" in self.player.inventory and self.player.inventory["Health Potion"] > 0:
+            heal_amount = random.randint(15, 30)
+            messagebox.showinfo("Heal", f"You use a health potion and heal for {heal_amount} HP.\nYour health: {self.player.health}")
+            self.player.health = min(100, self.player.health + heal_amount)
+            self.player.inventory["Health Potion"] -= 1
+        else:
+            messagebox.showinfo("Heal", "You don't have any health potions left!")
+
+if __name__ == "__main__":
+    app = AdventureGameGUI()
+    app.mainloop()
