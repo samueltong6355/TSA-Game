@@ -1,3 +1,5 @@
+main.py contains the main function :)
+
 IF THE CODE DOES NOT COMPILE:
 
 pip install Pillow
